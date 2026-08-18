@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from app.services.pdf_service import extract_text_from_pdf
 
 app = FastAPI(
@@ -15,7 +15,10 @@ def root():
     }
     
 @app.post("/analyze")
-async def analyze_resume(file: UploadFile = File(...)):
+async def analyze_resume(
+    file: UploadFile = File(...),
+    job_title: str = Form(...),
+    job_description: str = Form(...)):
     
     if file.content_type != "application/pdf":
         raise HTTPException(
@@ -25,9 +28,9 @@ async def analyze_resume(file: UploadFile = File(...)):
         
     file_bytes = await file.read()
     
-    text = extract_text_from_pdf(file_bytes)
+    resume_text = extract_text_from_pdf(file_bytes)
 
-    if not text:
+    if not resume_text:
         raise HTTPException(
             status_code=400,
             detail="Could not extract text from the PDF."
@@ -35,5 +38,11 @@ async def analyze_resume(file: UploadFile = File(...)):
     
     return {
         "filename" : file.filename,
-        "text": text
+        "job":{
+            "title": job_title,
+            "description": job_description
+        },
+        "resume":{
+            "text": resume_text
+        }
     }

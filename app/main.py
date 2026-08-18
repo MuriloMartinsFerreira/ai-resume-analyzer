@@ -26,6 +26,12 @@ async def analyze_resume(file: UploadFile = File(...)):
     file_bytes = await file.read()
     
     text = extract_text_from_pdf(file_bytes)
+
+    if not text:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not extract text from the PDF."
+        )
     
     return {
         "filename" : file.filename,

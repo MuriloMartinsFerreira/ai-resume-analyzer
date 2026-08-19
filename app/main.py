@@ -1,5 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from app.services.pdf_service import extract_text_from_pdf
+from app.services.ai_service import analyse_resume
 
 app = FastAPI(
     title="AI Resume Analyzer",
@@ -35,14 +36,14 @@ async def analyze_resume(
             status_code=400,
             detail="Could not extract text from the PDF."
         )
+        
+    analysis = analyse_resume(
+        resume_text=resume_text,
+        job_title=job_title,
+        job_description=job_description
+    )
     
     return {
         "filename" : file.filename,
-        "job":{
-            "title": job_title,
-            "description": job_description
-        },
-        "resume":{
-            "text": resume_text
-        }
+        "analysis": analysis
     }

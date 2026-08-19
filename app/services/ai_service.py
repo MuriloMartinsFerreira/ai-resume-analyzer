@@ -7,18 +7,24 @@ from app.schemas.resume_analysis import ResumeAnalysis
 
 load_dotenv()
 
-api_key = os.getenv("OPENAI_API_KEY")
+def get_client() -> OpenAI:
+    api_key = os.getenv("OPENAI_API_KEY")
 
-if not api_key:
-    raise ValueError("OPENAI_API_KEY is not configured.")
+    if not api_key:
+        raise ValueError(
+            "OPENAI_API_KEY is not configured."
+        )
 
-client= OpenAI(api_key=api_key)
+    return OpenAI(api_key=api_key)
+
 
 def analyse_resume(
     resume_text: str,
     job_title: str,
     job_description: str
 ) -> ResumeAnalysis:
+   
+    client = get_client()
     
     prompt = f"""
 You are an AI assistant specialized in resume analysis.

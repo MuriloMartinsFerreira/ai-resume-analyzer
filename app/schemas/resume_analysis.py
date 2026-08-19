@@ -7,7 +7,7 @@ class ResumeAnalysis(BaseModel):
         description="Compatibility score between resume and job"
     )
     
-    sumary: str
+    summary: str
     
     matched_skills: list[str]
     
